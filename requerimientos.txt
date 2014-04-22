@@ -10,6 +10,7 @@ django-notification==1.1.1
 django-tastypie==0.11.0
 ecdsa==0.11
 paramiko==1.12.3
+psycopg2==2.5.2
 pycrypto==2.6.1
 python-dateutil==2.2
 python-mimeparse==0.1.4
