@@ -12,129 +12,137 @@ from __future__ import unicode_literals
 from django.db import models
 
 class Accion(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    autorizacion = models.ForeignKey(Autorizacion, blank=True, null=True)
     descripcion = models.CharField(max_length=255)
-    fechafin = models.DateField('fecha de inicio')
     fechainicio = models.DateField('fecha de finalizacion')
+    fechafin = models.DateField('fecha de inicio')
     nombre = models.CharField(max_length=255)
     programa = models.ForeignKey('Programa')
+    destinatario = models.ForeignKey('Destinatario')
     class Meta:
         managed = True
-        db_table = 'accion'
 
 class Autorizacion(models.Model):
-    id = models.BigIntegerField(primary_key=True)
     descripcion = models.CharField(max_length=255)
-    accion = models.ForeignKey(Accion, blank=True, null=True)
+    estado = models.BooleanField()
+    dependencia = models.ForeignKey('Dependencia')
     class Meta:
         managed = True
-        db_table = 'autorizacion'
-
-class Contacto(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    email = models.CharField('e-mail',max_length=255)
-    fax = models.CharField(max_length=255)
-    interno = models.CharField(max_length=255)
-    red = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=255)
-    class Meta:
-        managed = True
-        db_table = 'contacto'
+        
 
 class Dependencia(models.Model):
-    id = models.BigIntegerField(primary_key=True)
     descripcion = models.CharField(max_length=255)
-    nombre = models.CharField(max_length=255)
-    autorizacion = models.ForeignKey(Autorizacion, blank=True, null=True)
-    programa = models.ForeignKey('Programa', blank=True, null=True)
+    nombre = models.CharField(max_length=255)    
+    dependencia = models.ForeignKey('self', blank=True, null=True)
+    responsable = models.ForeignKey('Responsable', blank=True, null=True)
     class Meta:
-        managed = True
-        db_table = 'dependencia'
+        managed = True        
 
 class Destinatario(models.Model):
-    id = models.BigIntegerField(primary_key=True)
     descripcion = models.CharField(max_length=255)
-    accion = models.ForeignKey(Accion, blank=True, null=True)
     class Meta:
         managed = True
-        db_table = 'destinatario'
-
-class Equipotrabajo(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    descripcion = models.CharField(max_length=255)
-    fechacreacion = models.DateField('fecha de creacion')
-    class Meta:
-        managed = True
-        db_table = 'equipotrabajo'
+                
 
 class Escuela(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    ambito = models.CharField(max_length=255)
+    ambito = models.CharField(max_length=255) """
+    Urbano
+ Rural
+ Rural Aglomerado
+ Rural Disperso
+ No Corresponde"""
     anexo = models.IntegerField()
     codjurisdiccional = models.CharField('codigo jurisdiccional',max_length=255)
     cue = models.IntegerField()
-    dependencia = models.CharField(max_length=255)
+    dependencia = models.CharField(max_length=255) # municipal, provincial, nacional 
     direccion = models.CharField(max_length=255)
+    fechacreacion = models.DateField(default=timezone.now)
+    estado = models.BooleanField(default=True)
     nombre = models.CharField(max_length=255)
-    sector = models.CharField(max_length=255)
+    sector = models.CharField(max_length=255) # estatal, privado
+    nivel = models.CharField(max_length=255) # comun, especial, adultos
+    orientacion = models.CharField(max_length=255) 
+    """
+ No corresponde
+ Bachiller
+ Ciclo Básico
+ Comercial
+ Técnica
+ Agropecuaria
+ Artística
+ Otros
+ Ciclo Básico Técnico
+ Humanidades y Cs. Sociales
+ Lenguas
+ Ciencias Naturales
+ Ciencias naturales, salud y medio ambiente
+ Economía y Gestión de las Organizaciones
+ Economía y Administración
+ Informática
+ Gestión y Administración
+ Tecnología
+ Producción de Bienes y Servicios
+ Comuncación, Artes y Diseño
+ Ciclo Básico Artístico
+ Comunicación
+ Ciclo Básico Agrario
+ Agro y Ambiente
+ Turismo
+ Educación Física
+ """
+    localidad = models.ForeignKey(Localidad, blank=True, null=True)
     class Meta:
         managed = True
-        db_table = 'escuela'
+        
 
 class Fondos(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    monto = models.TextField() # This field type is a guess.
-    tipofinanc = models.CharField('tipo de financiacion',max_length=255)
+    monto = models.FloatField() 
+    tipofinanciacion = models.CharField('tipo de financiacion',max_length=255) #Provincia o nación
     class Meta:
         managed = True
-        db_table = 'fondos'
+        
 
 class Instrumentolegal(models.Model):
-    id = models.BigIntegerField(primary_key=True)
     descripcion = models.CharField(max_length=255)
     fecha = models.DateField()
     tipodocleg = models.CharField('tipo de documento legal',max_length=255)
     class Meta:
         managed = True
-        db_table = 'instrumentolegal'
+        
 
 class Localidad(models.Model):
-    id = models.BigIntegerField(primary_key=True)
     codigopostal = models.IntegerField('codigo postal')
     departamento = models.CharField(max_length=255)
     nombre = models.CharField(max_length=255)
-    region = models.CharField(max_length=255)
+    region = models.CharField(max_length=255) # 123456
     accion = models.ForeignKey(Accion, blank=True, null=True)
     escuela = models.ForeignKey(Escuela, blank=True, null=True)
     class Meta:
         managed = True
-        db_table = 'localidad'
-
-class Nivel(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    codigonivel = models.CharField(max_length=1)
-    descripcion = models.CharField(max_length=255)
-    escuela = models.ForeignKey(Escuela, blank=True, null=True)
-    class Meta:
-        managed = True
-        db_table = 'nivel'
+        
 
 class Persona(models.Model):
-    id = models.BigIntegerField(primary_key=True)
     apellido = models.CharField(max_length=255)
     direccion = models.CharField(max_length=255)
-    dni = models.IntegerField()
+    tipodocumento = models.CharField() # dni, etc.
+    documento = models.IntegerField()
+	cuilcuit = models.CharField()
+	fechanacimiento = models.DateField()
     edad = models.IntegerField()
     nacionalidad = models.CharField(max_length=255)
     nombre = models.CharField(max_length=255)
-    contacto = models.ForeignKey(Contacto, blank=True, null=True)
     localidad = models.ForeignKey(Localidad, blank=True, null=True)
+    email = models.CharField('e-mail',max_length=255)
+    fax = models.CharField(max_length=255)
+    interno = models.CharField(max_length=255)
+    red = models.CharField(max_length=255)
+    telefono = models.CharField(max_length=255)
+    situacionlaboral = models.ForeignKey(Situacionlaboral)
     class Meta:
         managed = True
         db_table = 'persona'
 
-class Programa(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+class Programa(models.Model):    
     descripcion = models.CharField(max_length=255)
     direccion = models.CharField(max_length=255)
     fechacreacion = models.DateField('fecha de creacion')
@@ -144,41 +152,41 @@ class Programa(models.Model):
     equipotrabajo = models.ForeignKey(Equipotrabajo, blank=True, null=True)
     fondos = models.ForeignKey(Fondos, blank=True, null=True)
     instrumentolegal = models.ForeignKey(Instrumentolegal, blank=True, null=True)
+    dependencia = models.ForeignKey(Dependencia, blank=True, null=True)
+    email = models.CharField('e-mail',max_length=255)
+    fax = models.CharField(max_length=255)
+    interno = models.CharField(max_length=255)
+    red = models.CharField(max_length=255)
+    telefono = models.CharField(max_length=255)
+    destinatario = models.ForeignKey(Destinatario)
+    fondo = models.ForeignKey(Fondo)
     class Meta:
         managed = True
         db_table = 'programa'
 
-class ProgramaAccion(models.Model):
-    programa = models.ForeignKey(Programa)
-    accion = models.ForeignKey(Accion, unique=True)
+class Rol(Persona):    
+    class Meta:
+    	abstract = True
+        managed = True
+
+class Responsable(Rol):    
     class Meta:
         managed = True
-        db_table = 'programa_accion'
 
-class Rol(models.Model):
-    dtype = models.CharField(max_length=31)
-    id = models.BigIntegerField(primary_key=True)
-    idresponsable = models.IntegerField()
-    idagente = models.IntegerField()
-    persona = models.ForeignKey(Persona, blank=True, null=True)
-    programa = models.ForeignKey(Programa, blank=True, null=True)
+class Agente(Rol):    
     class Meta:
         managed = True
-        db_table = 'rol'
 
-class Situacionlaboral(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+class Situacionlaboral(models.Model):    
     codigocargo = models.IntegerField('codigo de cargo')
     descripcion = models.CharField(max_length=255)
     fechaingreso = models.DateField('fecha de ingreso')
-    tipocargo = models.CharField('tipo de cargo',max_length=1)
-    persona = models.ForeignKey(Persona, blank=True, null=True)
+    tipocargo = models.CharField('tipo de cargo',max_length=1)    
     class Meta:
         managed = True
         db_table = 'situacionlaboral'
 
-class Tarea(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+class Tarea(models.Model):    
     descripcion = models.CharField(max_length=255)
     fechafin = models.DateField('fecha de finalizacion')
     fechainicio = models.DateField('fecha de inicio')
