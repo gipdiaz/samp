@@ -4,14 +4,15 @@ from django.utils import timezone
 
 # ---------------------- #
 class Accion(models.Model):
-    autorizacion = models.ForeignKey("Autorizacion", blank=True, null=True)
-    descripcion = models.CharField(max_length=255)
-    fechainicio = models.DateField('fecha de finalizacion')
-    fechafin = models.DateField('fecha de inicio')
+    autorizacion = models.ForeignKey("Autorizacion", blank=True, null=True,verbose_name='Autorización')
+    descripcion = models.CharField('Descripción',max_length=255)
+    fechainicio = models.DateField('Fecha de finalización')
+    fechafin = models.DateField('Fecha de inicio')
     nombre = models.CharField(max_length=255)
     programa = models.ForeignKey('Programa')
     destinatario = models.ForeignKey('Destinatario')
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    localidad = models.ForeignKey("Localidad", blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Acciones"
@@ -21,10 +22,10 @@ class Accion(models.Model):
 
 # ---------------------- #
 class Autorizacion(models.Model):
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField('Descripción',max_length=255)
     estado = models.BooleanField()
     dependencia = models.ForeignKey('Dependencia')
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Autorizaciones"
@@ -34,11 +35,11 @@ class Autorizacion(models.Model):
         
 # ---------------------- #
 class Dependencia(models.Model):
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField('Descripción',max_length=255)
     nombre = models.CharField(max_length=255)    
     dependencia = models.ForeignKey('self', related_name="depende", blank=True, null=True)
     responsable = models.ForeignKey('Responsable', blank=True, null=True)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Dependencias"
@@ -48,8 +49,8 @@ class Dependencia(models.Model):
 
 # ---------------------- #
 class Destinatario(models.Model):
-    descripcion = models.CharField(max_length=255)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    descripcion = models.CharField('Descripción',max_length=255)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Destinatarios"
@@ -120,20 +121,20 @@ class Escuela(models.Model):
     SECTOR_DICT = dict(SECTOR)
     NIVEL_DICT = dict(NIVEL)
     
-    tipo_ambito = models.PositiveSmallIntegerField(choices = TIPO_AMBITO)
-    ambito = models.CharField(max_length=255)
+    tipo_ambito = models.PositiveSmallIntegerField('Tipo de ámbito',choices = TIPO_AMBITO)
+    ambito = models.CharField('Ámbito',max_length=255)
     anexo = models.IntegerField()
-    codjurisdiccional = models.CharField('codigo jurisdiccional',max_length=255)
-    cue = models.IntegerField()
+    codjurisdiccional = models.CharField('Código jurisdiccional',max_length=255)
+    cue = models.IntegerField('CUE')
     dependencia = models.PositiveSmallIntegerField(choices = DEPENDENCIA)
-    direccion = models.CharField(max_length=255)
+    direccion = models.CharField('Dirección',max_length=255)
     estado = models.BooleanField(default=True)
     nombre = models.CharField(max_length=255)
     sector = models.PositiveSmallIntegerField(choices = SECTOR)
     nivel = models.PositiveSmallIntegerField(choices = NIVEL)
-    orientacion = models.PositiveSmallIntegerField(choices = ORIENTACION)
+    orientacion = models.PositiveSmallIntegerField('Orientación',choices = ORIENTACION)
     localidad = models.ForeignKey("Localidad", blank=True, null=True)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = "Escuelas"
@@ -151,10 +152,10 @@ class Fondo(models.Model):
     
     TIPO_FINANCIACION_DICT = dict(TIPO_FINANCIACION)
 
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField('Descripción',max_length=255)
     monto = models.FloatField() 
-    tipofinanciacion = models.PositiveSmallIntegerField(choices = TIPO_FINANCIACION)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    tipofinanciacion = models.PositiveSmallIntegerField('Tipo de financiación',choices = TIPO_FINANCIACION)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Fondos"
@@ -164,9 +165,9 @@ class Fondo(models.Model):
         
 # ---------------------- #
 class Instrumentolegal(models.Model):
-    descripcion = models.CharField(max_length=255)
-    tipodocleg = models.CharField('tipo de documento legal',max_length=255)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    descripcion = models.CharField('Descripción',max_length=255)
+    tipodocleg = models.CharField('Tipo de documento legal',max_length=255)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Instrumentos Legales"
@@ -188,12 +189,11 @@ class Localidad(models.Model):
 
     REGION_DICT = dict(REGION)
 
-    codigopostal = models.IntegerField('codigo postal')
+    codigopostal = models.IntegerField('Código postal')
     departamento = models.CharField(max_length=255)
     nombre = models.CharField(max_length=255)
-    region = models.PositiveSmallIntegerField(choices = REGION)
-    accion = models.ForeignKey(Accion, blank=True, null=True)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    region = models.PositiveSmallIntegerField('Región',choices = REGION)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Localidades"
@@ -216,11 +216,11 @@ class Persona(models.Model):
 
     apellido = models.CharField(max_length=255)
     nombre = models.CharField(max_length=255)
-    direccion = models.CharField(max_length=255)
-    tipodocumento = models.PositiveSmallIntegerField(choices = TIPO_DOCUMENTO)
+    direccion = models.CharField('Dirección',max_length=255)
+    tipodocumento = models.PositiveSmallIntegerField('Tipo de documento',choices = TIPO_DOCUMENTO)
     documento = models.IntegerField()
-    cuilcuit = models.CharField(max_length=255)
-    fechanacimiento = models.DateField()
+    cuilcuit = models.CharField('CUIL/CUIT',max_length=255)
+    fechanacimiento = models.DateField('Fecha de nacimiento')
     edad = models.IntegerField()
     nacionalidad = models.CharField(max_length=255)
     localidad = models.ForeignKey(Localidad, blank=True, null=True)
@@ -228,9 +228,9 @@ class Persona(models.Model):
     fax = models.CharField(max_length=255)
     interno = models.CharField(max_length=255)
     red = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=255)
-    situacionlaboral = models.ForeignKey("Situacionlaboral")
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    telefono = models.CharField('Teléfono',max_length=255)
+    situacionlaboral = models.ForeignKey("Situacionlaboral",verbose_name='Situacion laboral')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Personas"
@@ -240,22 +240,22 @@ class Persona(models.Model):
 
 # ---------------------- #
 class Programa(models.Model):    
-    descripcion = models.CharField(max_length=255)
-    direccion = models.CharField(max_length=255)
-    mision = models.CharField(max_length=255)
+    descripcion = models.CharField('Descripción',max_length=255)
+    direccion = models.CharField('Dirección',max_length=255)
+    mision = models.CharField('Misión',max_length=255)
     nombre = models.CharField(max_length=255)
     #contacto = models.ForeignKey("Contacto", blank=True, null=True)
     #equipotrabajo = models.ForeignKey("Equipotrabajo", blank=True, null=True)
     fondos = models.ForeignKey("Fondo", blank=True, null=True)
-    instrumentolegal = models.ForeignKey("Instrumentolegal", blank=True, null=True)
+    instrumentolegal = models.ForeignKey("Instrumentolegal", blank=True, null=True,verbose_name='Instrumento legal')
     dependencia = models.ForeignKey("Dependencia", blank=True, null=True)
-    email = models.CharField('e-mail',max_length=255)
+    email = models.CharField('E-mail',max_length=255)
     fax = models.CharField(max_length=255)
     interno = models.CharField(max_length=255)
     red = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=255)
+    telefono = models.CharField('Teléfono',max_length=255)
     destinatario = models.ForeignKey("Destinatario")
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Programas"
@@ -267,7 +267,7 @@ class Programa(models.Model):
 class Rol(models.Model):
     nombre = models.CharField(max_length=255)  
     persona = models.ForeignKey("Persona")  
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name_plural = "Roles"
 
@@ -294,11 +294,11 @@ class Agente(Rol):
 
 # ---------------------- #
 class Situacionlaboral(models.Model):    
-    codigocargo = models.IntegerField('codigo de cargo')
-    descripcion = models.CharField(max_length=255)
-    fechaingreso = models.DateField('fecha de ingreso')
-    tipocargo = models.CharField('tipo de cargo',max_length=1)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    codigocargo = models.IntegerField('Código de cargo')
+    descripcion = models.CharField('Descripción',max_length=255)
+    fechaingreso = models.DateField('Fecha de ingreso')
+    tipocargo = models.CharField('Tipo de cargo',max_length=1)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Situaciones Laborales"
@@ -308,14 +308,14 @@ class Situacionlaboral(models.Model):
 
 # ---------------------- #
 class Tarea(models.Model):    
-    descripcion = models.CharField(max_length=255)
-    fechafin = models.DateField('fecha de finalizacion')
-    fechainicio = models.DateField('fecha de inicio')
+    descripcion = models.CharField('Descripción',max_length=255)
+    fechafin = models.DateField('Fecha de finalización')
+    fechainicio = models.DateField('Fecha de inicio')
     nombre = models.CharField(max_length=255)
     prioridad = models.IntegerField()
-    accion = models.ForeignKey(Accion, blank=True, null=True)
+    accion = models.ForeignKey(Accion, blank=True, null=True,verbose_name='Acción')
     rol = models.ForeignKey(Rol, blank=True, null=True)
-    fecha_creacion = models.DateTimeField(default = timezone.now())
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name_plural = "Tareas"
